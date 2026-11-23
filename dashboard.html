@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Active - Dashboard Preview</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1c2333;--muted:#6b7280;--line:#e5e7eb}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b1f2a;--text:#e8eaf0;--muted:#9aa3b2;--line:#2b3040}}
+body{margin:0;font-family:-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);padding:24px}
+h1{margin:0 0 4px;font-size:22px}.sub{color:var(--muted);margin-bottom:20px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card b{font-size:26px;display:block}.card span{color:var(--muted);font-size:13px}
+h2{font-size:16px;margin:0 0 12px}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.row .n{width:90px}.bar{flex:1;display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--line)}
+.bar i{display:block}.hot{background:#16a34a}.warm{background:#f59e0b}.cold{background:#60a5fa}.junk{background:#9ca3af}.fake{background:#ef4444}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin-top:10px;color:var(--muted)}
+.legend s{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;text-decoration:none}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:500}
+.tag{padding:2px 8px;border-radius:10px;color:#fff;font-size:12px}
+</style></head><body>
+<h1>Lead Active</h1><div class="sub">Lead quality dashboard (sample data)</div>
+<div class="grid" id="kpis"></div>
+<div class="card" style="margin-bottom:20px"><h2>Lead quality by source</h2><div id="bars"></div>
+<div class="legend"><span><s class="hot"></s>Hot</span><span><s class="warm"></s>Warm</span><span><s class="cold"></s>Cold</span><span><s class="junk"></s>Junk</span><span><s class="fake"></s>Fake</span></div></div>
+<div class="card"><h2>Recent leads</h2><div class="wrap"><table id="tbl"><tr><th>Name</th><th>Source</th><th>Label</th><th>Reason</th></tr></table></div></div>
+<script>
+const leads=[
+["Arun Kumar","Meta","Hot","Strong buying intent"],["Priya S","Google","Hot","Strong buying intent"],
+["Test User","Meta","Fake","Invalid phone number"],["Karthik R","JioHotstar","Cold","Low intent"],
+["Meena L","WhatsApp","Hot","Strong buying intent"],["Arun Kumar","Google","Fake","Duplicate lead"],
+["Ravi T","Meta","Junk","Spam message"],["Divya N","WhatsApp","Warm","Some interest"],
+["Suresh M","Google","Hot","Strong buying intent"],["Anitha B","JioHotstar","Cold","Low intent"]];
+const labels=["Hot","Warm","Cold","Junk","Fake"];
+const total=leads.length,good=leads.filter(l=>l[2]=="Hot"||l[2]=="Warm").length;
+document.getElementById("kpis").innerHTML=[[total,"Total leads"],[good,"Qualified leads"],
+[Math.round(good/total*100)+"%","Qualified rate"],[leads.filter(l=>l[2]=="Junk"||l[2]=="Fake").length,"Junk / fake removed"]]
+.map(k=>`<div class="card"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+const sources=[...new Set(leads.map(l=>l[1]))];
+document.getElementById("bars").innerHTML=sources.map(s=>{const L=leads.filter(l=>l[1]==s);
+return `<div class="row"><div class="n">${s}</div><div class="bar">`+labels.map(b=>`<i class="${b.toLowerCase()}" style="width:${L.filter(l=>l[2]==b).length/L.length*100}%"></i>`).join("")+`</div></div>`}).join("");
+document.getElementById("tbl").insertAdjacentHTML("beforeend",leads.map(l=>`<tr><td>${l[0]}</td><td>${l[1]}</td><td><span class="tag ${l[2].toLowerCase()}">${l[2]}</span></td><td>${l[3]}</td></tr>`).join(""));
+</script></body></html>
